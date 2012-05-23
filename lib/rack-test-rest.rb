@@ -9,7 +9,7 @@ module Rack
       end
 
       def headers
-        @rack_test_rest[:headers] == nil ? "" : @rack_test_rest[:headers]
+        @rack_test_rest[:headers] == nil ? {} : @rack_test_rest[:headers]
       end
 
       def handle_error_code(code)
