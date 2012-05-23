@@ -8,6 +8,10 @@ module Rack
         "#{@rack_test_rest[:root_uri]}/#{@rack_test_rest[:resource]}"
       end
 
+      def headers
+        @rack_test_rest[:headers] == nil ? "" : @rack_test_rest[:headers]
+      end
+
       def handle_error_code(code)
         assert_equal code, last_response.status,
           "Expected #{code}, got #{last_response.status} - body #{last_response.body.empty? ? "empty" : last_response.body.pretty_inspect.chomp}"
@@ -32,7 +36,7 @@ module Rack
         params.delete :code
 
         puts "Posting to: '#{resource_uri}#{@rack_test_rest[:extension]}'" if @rack_test_rest[:debug]
-        post "#{resource_uri}#{@rack_test_rest[:extension]}", params
+        post "#{resource_uri}#{@rack_test_rest[:extension]}", params, headers
 
         return handle_error_code(expected_code) if expected_code
 
@@ -64,7 +68,7 @@ module Rack
         end
 
         puts "GET #{uri} #{params.pretty_inspect}" if @rack_test_rest[:debug]
-        get uri, params
+        get uri, params, headers
 
         return handle_error_code(expected_code) if expected_code
 
@@ -88,7 +92,7 @@ module Rack
 
         puts "Attempting to update #{id} with #{params.pretty_inspect}" if @rack_test_rest[:debug]
 
-        put "#{resource_uri}/#{id}#{@rack_test_rest[:extension]}", params
+        put "#{resource_uri}/#{id}#{@rack_test_rest[:extension]}", params, headers
 
         return handle_error_code(expected_code) if expected_code
 
@@ -98,7 +102,7 @@ module Rack
       end
 
       def delete_resource(params={})
-        delete "#{resource_uri}/#{params[:id]}#{@rack_test_rest[:extension]}"
+        delete "#{resource_uri}/#{params[:id]}#{@rack_test_rest[:extension]}", nil, headers
 
         return handle_error_code(params[:code]) if params[:code]
 
