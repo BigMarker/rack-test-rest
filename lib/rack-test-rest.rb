@@ -24,7 +24,7 @@ module Rack
         end
         assert_content_type_is_json(last_response)
 
-        if last_response.headers['Content-Length'].to_i > 0
+        if last_response.headers['Content-Length'].to_i > 0 && last_response.status != 304
           JSON.parse(last_response.body)
         else
           nil
@@ -158,8 +158,9 @@ module Rack
 
       def assert_content_type_is_json(response)
         # ignore character sets when evaluating content type
-        content_type = response.headers['Content-Type'].split(';')[0].strip.downcase
-        assert_equal 'application/json', content_type
+        content_type = response.headers['Content-Type']
+        content_type = content_type.split(';')[0].strip.downcase if content_type.is_a?(Array)
+        assert_equal 'application/json', content_type unless response.status == 304
       end
 
     end
